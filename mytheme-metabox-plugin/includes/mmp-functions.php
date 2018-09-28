@@ -35,7 +35,7 @@ function mmp_Add_My_Admin_Link()
         'My First Page', // Title of the page
         'Mytheme Metabox Plugin', // Text to show on the menu link
         'manage_options', // Capability requirement to see the link
-        'includes/mmp-first-acp-page.php' // The 'slug' - file to display when clicking the link
+        'includes/mmp-first-acp-page' // The 'slug' - file to display when clicking the link
     );
 }
 
@@ -44,14 +44,25 @@ function mmp_Add_My_Admin_Actions()
 	//Add to Settings menu
 
 	// add_options_page( $page_title, $menu_title, $capability, $menu_slug, $function = '' );
-	add_options_page("Mytheme Metabox Plugin", "Mytheme Metabox Plugin", 1, "Mytheme Metabox Plugin", "mmp_admin_actions");
+	add_options_page("Mytheme Metabox Plugin", "Mytheme Metabox Plugin", "manage_options", "Mytheme Metabox Plugin", "mmp_plugin_options");
 
 	// or/and Add to Tools menu
 	// add_management_page("Mytheme Demo Plugin", "Mytheme Demo Plugin", 1, "Mytheme Demo Plugin", "mdp_admin_actions");
 }
 add_action('admin_menu', 'mmp_Add_My_Admin_Actions');
 
+function mmp_plugin_options() {
+  if ( !current_user_can( 'manage_options' ) )  {
+    wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+  }
+  echo '<div class="wrap">';
+  echo '<p>Here is where the form would go if I actually had options.</p>';
 
+  echo '</div>';
+}
+
+
+// -------------------------------------------
 // META BOX
 
 function theme_slug_custom_meta_box() {
@@ -186,11 +197,11 @@ function theme_slug_meta_save( $post_id ) {
     }
 
 
-    // if ( isset( $_POST[ 'my_meta_box_select' ] ) ) {
+    if ( isset( $_POST[ 'my_meta_box_select' ] ) ) {
 
-    //     update_post_meta( $post_id, 'Kích thước', sanitize_text_field( $_POST[ 'my_meta_box_select' ] ) ); 
+        update_post_meta( $post_id, 'Kích thước', sanitize_text_field( $_POST[ 'my_meta_box_select' ] ) ); 
 
-    // }
+    }
 
 }
 
@@ -203,7 +214,10 @@ add_action( 'setting_from_plugin', 'theme_slug_team_designation' );
 add_action( 'setting_from_plugin', 'cd_meta_box_cb' );
 add_action( 'setting_from_plugin', 'theme_slug_meta_save' );
 
-register_activation_hook( __FILE__, 'myPost_custom_init');
+// if( is_plugin_active( 'mytheme-cpt-plugin/mytheme-cpt-plugin.php' ) ) {
+//     
+// }
+register_activation_hook( __FILE__, 'theme_slug_custom_meta_box');
 register_activation_hook( __FILE__, 'theme_slug_team_designation');
 register_activation_hook( __FILE__, 'cd_meta_box_cb');
 register_activation_hook( __FILE__, 'theme_slug_meta_save');
